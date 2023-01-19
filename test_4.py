@@ -32,12 +32,9 @@ picture = []
 external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
 
 
-
 def write_p_from_binary(f_path, p_b):
     f = open(f_path, 'wb')
     f.write(p_b)
-
-
 
 
 # drawing:
@@ -840,8 +837,10 @@ def pipet():
 
 # start:
 def play():
+    global level
     menu.clear()
     db = 'painterly_base.db'
+    level = False
     try:
         global done_login, done_passw, external_ip
         con = sqlite3.connect(db)
@@ -973,7 +972,8 @@ def main_menu():
 # здесь перетаскивание фигур
 def house_level():
     menu.disable()
-    global undone, maxundone
+    global undone, maxundone, level
+    level = True
     c = 0
     moving = False
     x, y = 0, 0
@@ -1012,13 +1012,18 @@ def house_level():
 
         pygame.draw.rect(window, (0, 255, 0), (x, y, 50, 100))
         pygame.draw.rect(window, (0, 0, 255), (x1, y1, 50, 50))
+        # картинка
         pg.draw.rect(window, black, (0.75 * width_window - 14, 0, 0.25 * width_window + 14, 0.25 * length_window))
         pg.draw.rect(window, gray, (0.75 * width_window - 10, 0, 0.25 * width_window + 6, 0.25 * length_window - 4))
         pg.draw.rect(window, white, (0.75 * width_window + 6.5, 8, 0.25 * width_window - 24, 0.25 * length_window - 24))
+        # под кнопки
         pg.draw.rect(window, black,
                      (0.875 * width_window, 0.25 * length_window, 0.25 * width_window, 0.75 * length_window))
         pg.draw.rect(window, gray,
-                     (0.875 * width_window + 4, 0.25 * length_window, 0.25 * width_window - 247, 0.75 * length_window - 4))
+                     (0.875 * width_window + 4, 0.25 * length_window, 0.25 * width_window - 247, 0.75 * length_window))
+        # трава
+        pg.draw.rect(window, (0, 209, 118),
+                     (0, 0.925 * length_window, 0.875 * width_window, 0.075 * length_window))
         pygame.display.flip()
         window.fill((255, 255, 255))
 
@@ -1632,7 +1637,7 @@ def music(_, value):
 
 
 def settings():
-    global music_now
+    global music_now, level, interface
     menu.clear()
     if language_now == 'Eng':
         menu.add.selector('Language: ', [('English', 'English'), ('Русский', 'Russian')], onchange=translate)
@@ -1640,6 +1645,14 @@ def settings():
                                          onchange=music)
         sc = menu.add.selector('Scaling shapes: ', [('1', 1), ('2', 2), ('3', 3), ('5', 5), ('10', 10)],
                                onchange=scaling_shapes)
+        if not level:
+            if interface:
+                a = 'Disable the interface'
+                interface = False
+            else:
+                a = 'Enable the interface'
+                interface = True
+            lev = menu.add.button('Enable/Disable the interface', hide_buttons)
         menu.add.button('Back', main_menu)
     elif language_now == 'Rus':
         menu.add.selector('Язык: ', [('Русский', 'Russian'), ('English', 'English')], onchange=translate)
@@ -1648,6 +1661,12 @@ def settings():
                                          onchange=music)
         sc = menu.add.selector('Масштабирование фигур: ', [('1', 1), ('2', 2), ('3', 3), ('5', 5), ('10', 10)],
                                onchange=scaling_shapes)
+        if not level:
+            if interface:
+                interface = False
+            else:
+                interface = True
+            lev = menu.add.button('Включить/выключить интерфейс', hide_buttons)
         menu.add.button('Назад', main_menu)
     music_button.set_value(music_now - 1)
     sc.set_value(str(scaling))
@@ -1666,8 +1685,8 @@ def updating():
 
 
 def hide_buttons():
-    global hide
-    if not hide:
+    global interface
+    if not interface:
         # сокрытие
         a_button.hide()
         s_button.hide()
@@ -1681,6 +1700,35 @@ def hide_buttons():
         pipette.hide()
         overlay_mode.hide()
         clear_button.hide()
+        button_1.hide()
+        button_2.hide()
+        button_3.hide()
+        button_4.hide()
+        button_5.hide()
+        button_6.hide()
+        button_7.hide()
+        button_8.hide()
+        button_9.hide()
+        button_0.hide()
+        black_button.hide()
+        white_button.hide()
+        red_button.hide()
+        orange_button.hide()
+        yellow_button.hide()
+        green_button.hide()
+        blue_button.hide()
+        purple_button.hide()
+        brown_button.hide()
+        slider_r.hide()
+        slider_g.hide()
+        slider_b.hide()
+        text_box_r.hide()
+        text_box_g.hide()
+        text_box_b.hide()
+        button_player_colour.hide()
+        button_locked_x.hide()
+        button_locked_y.hide()
+        save_button.hide()
         # отключение
         button_circle.disable()
         button_rectangle.disable()
@@ -1688,7 +1736,25 @@ def hide_buttons():
         pipette.disable()
         overlay_mode.disable()
         clear_button.disable()
-        hide = True
+        black_button.disable()
+        white_button.disable()
+        red_button.disable()
+        orange_button.disable()
+        yellow_button.disable()
+        green_button.disable()
+        blue_button.disable()
+        purple_button.disable()
+        brown_button.disable()
+        slider_r.disable()
+        slider_g.disable()
+        slider_b.disable()
+        text_box_r.disable()
+        text_box_g.disable()
+        text_box_b.disable()
+        button_player_colour.disable()
+        button_locked_x.disable()
+        button_locked_y.disable()
+        save_button.disable()
     else:
         # показ
         a_button.show()
@@ -1703,6 +1769,35 @@ def hide_buttons():
         pipette.show()
         overlay_mode.show()
         clear_button.show()
+        button_1.show()
+        button_2.show()
+        button_3.show()
+        button_4.show()
+        button_5.show()
+        button_6.show()
+        button_7.show()
+        button_8.show()
+        button_9.show()
+        button_0.show()
+        black_button.show()
+        white_button.show()
+        red_button.show()
+        orange_button.show()
+        yellow_button.show()
+        green_button.show()
+        blue_button.show()
+        purple_button.show()
+        brown_button.show()
+        slider_r.show()
+        slider_g.show()
+        slider_b.show()
+        text_box_r.show()
+        text_box_g.show()
+        text_box_b.show()
+        button_player_colour.show()
+        button_locked_x.show()
+        button_locked_y.show()
+        save_button.show()
         # включение
         button_circle.enable()
         button_rectangle.enable()
@@ -1710,7 +1805,25 @@ def hide_buttons():
         pipette.enable()
         overlay_mode.enable()
         clear_button.enable()
-        hide = False
+        black_button.enable()
+        white_button.enable()
+        red_button.enable()
+        orange_button.enable()
+        yellow_button.enable()
+        green_button.enable()
+        blue_button.enable()
+        purple_button.enable()
+        brown_button.enable()
+        slider_r.enable()
+        slider_g.enable()
+        slider_b.enable()
+        text_box_r.enable()
+        text_box_g.enable()
+        text_box_b.enable()
+        button_player_colour.enable()
+        button_locked_x.enable()
+        button_locked_y.enable()
+        save_button.enable()
 
 
 ########################################################################################################################
@@ -1728,6 +1841,8 @@ mousepos = (0, 0)
 language_now = 'Rus'
 music_now = 1
 scaling = 1
+level = False
+interface = True
 ##############
 done_login = 'afhvgnf'
 done_passw = 'nhmhhy78'
@@ -1814,8 +1929,6 @@ overlaybg = overlay.copy()
 # key_function:
 locked_x = False
 locked_y = False
-# hide:
-hide = False
 # shapes:
 clr = black
 shape = 'circle'
@@ -1972,18 +2085,6 @@ if to_be_or_not_to_be == 1:
                                    onClick=overlay_shape,
                                    borderThickness=5,
                                    image=image)
-        hide_b = SuperButton(window,
-                             int(monitor[0] * 0.935),
-                             int(monitor[1] * 0.83),
-                             int(monitor[0] * 0.057),
-                             int(monitor[1] * 0.1),
-                             inactiveColour=white,
-                             hoverColour=white,
-                             pressedColour=white,
-                             onClick=hide_buttons,
-                             borderThickness=5)
-
-
 # если нет бд
 else:
     button_circle = SuperButton(window,
@@ -2050,16 +2151,6 @@ else:
                                pressedColour=white,
                                onClick=overlay_shape,
                                borderThickness=5)
-    hide_b = SuperButton(window,
-                         int(monitor[0] * 0.935),
-                         int(monitor[1] * 0.44),
-                         int(monitor[0] * 0.057),
-                         int(monitor[1] * 0.1),
-                         inactiveColour=white,
-                         hoverColour=white,
-                         pressedColour=white,
-                         onClick=hide_buttons,
-                         borderThickness=5)
 a_button = SuperButton(window,
                        int(monitor[0] * 0.910),
                        int(monitor[1] * 0.072),
@@ -2132,18 +2223,6 @@ c_button = SuperButton(window,
                        fontSize=60,
                        textColour=white)
 c_button.disable()
-z_button = SuperButton(window,
-                       int(monitor[0] * 0.910),
-                       int(monitor[1] * 0.872),
-                       int(monitor[0] * 0.02),
-                       int(monitor[1] * 0.05),
-                       inactiveColour=gray,
-                       hoverColour=gray,
-                       pressedColour=gray,
-                       text='Z',
-                       fontSize=60,
-                       textColour=white)
-z_button.disable()
 if language_now == 'Eng':
     text_locked_x = 'locked "x" = False'
     text_locked_y = 'locked "y" = False'
