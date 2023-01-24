@@ -36,4 +36,4 @@
 	import platform
 	import shutil
 	import pyautogui
-Код работает на Windows 10 и выше
+Код работает на Windows 10 и выше, для работы с программой необходим интернет
